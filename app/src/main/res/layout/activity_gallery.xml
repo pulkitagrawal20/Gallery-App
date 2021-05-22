@@ -11,12 +11,18 @@
         android:id="@+id/List"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
-        android:padding="8dp"
-        tools:context=".Gallery_Activity">
+        android:padding="8dp">
 
-
+        <TextView
+            android:id="@+id/itemsList"
+            style="@style/TextAppearance.MaterialComponents.Headline6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="320dp"
+            android:gravity="center"
+            android:text="@string/no_items_try_adding_from_the_action_above" />
     </LinearLayout>
 
 

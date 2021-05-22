@@ -1,45 +1,29 @@
   package com.example.android.galleryapp;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.solver.state.State;
-import androidx.palette.graphics.Palette;
 
-import android.app.Activity;
-import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.renderscript.ScriptGroup;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 
+import com.bumptech.glide.Glide;
 import com.example.android.galleryapp.Models.Item;
 import com.example.android.galleryapp.databinding.ActivityGalleryBinding;
-import com.example.android.galleryapp.databinding.ChipColorBinding;
-import com.example.android.galleryapp.databinding.ChipLabelBinding;
-import com.example.android.galleryapp.databinding.DialogAddImageBinding;
 import com.example.android.galleryapp.databinding.ItemCardBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.mlkit.vision.common.InputImage;
-import com.google.mlkit.vision.label.ImageLabel;
-import com.google.mlkit.vision.label.ImageLabeler;
-import com.google.mlkit.vision.label.ImageLabeling;
-import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
 
-import java.util.HashSet;
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
   public class Gallery_Activity extends AppCompatActivity {
       ActivityGalleryBinding b;
+      List<Item> items=new ArrayList<>();
+      SharedPreferences preferences;
+      private List<String>urls=new ArrayList<>();
 
       @Override
       protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +33,12 @@ import java.util.Set;
           b = ActivityGalleryBinding.inflate((getLayoutInflater()));
           setContentView(b.getRoot());
 
+          if(!items.isEmpty()){
+              b.itemsList.setVisibility(View.GONE);
+          }
+
+          preferences= getPreferences(MODE_PRIVATE);
+          getDataFromSharedPreferences();
 
       }
 
@@ -73,7 +63,9 @@ import java.util.Set;
                   .show(this, new AddImageDialog.OnCompleteListener() {
                       @Override
                       public void onImageAdded(Item item) {
+                          items.add(item);
                           inflateViewForItem(item);
+                          b.itemsList.setVisibility(View.GONE);
                       }
 
                       @Override
@@ -92,13 +84,53 @@ import java.util.Set;
           ItemCardBinding binding=ItemCardBinding.inflate(getLayoutInflater());
 
           //Bind Data:
-          binding.ImageView.setImageBitmap(item.image);
+          Glide.with(this)
+                  .load(item.url)
+                  .into(binding.ImageView);
+
           binding.title.setText(item.label);
           binding.title.setBackgroundColor(item.color);
+          urls.add(item.url);
+
 
           //Add it to the List:
           b.List.addView(binding.getRoot());
       }
 
+
+      private void getDataFromSharedPreferences() {
+          int itemCount=preferences.getInt(Constants.NO_OF_IMAGES,0);
+          if(itemCount!=0){
+              b.itemsList.setVisibility(View.GONE);
+          }
+          for (int i=0;i<itemCount;i++){
+              Item item=new Item(preferences.getString(Constants.IMAGE+i,"")
+                      ,preferences.getInt(Constants.COLOR+i,0)
+                      ,preferences.getString(Constants.LABEL+i,""));
+
+              items.add(item);
+              inflateViewForItem(item);
+          }
+      }
+
+      @Override
+      protected void onPause() {
+          super.onPause();
+          int numOfImage=items.size();
+          preferences.edit().putInt(Constants.NO_OF_IMAGES,numOfImage).apply();
+
+          int imageCount=0;
+          for(Item item:items){
+              preferences.edit()
+                      .putInt(Constants.COLOR+imageCount,item.color)
+                      .putString(Constants.LABEL+imageCount,item.label)
+                      .putString(Constants.IMAGE+imageCount,urls.get(imageCount))
+                      .apply();
+
+              imageCount++;
+
+          }
+          preferences.edit().commit();
+      }
   }
 

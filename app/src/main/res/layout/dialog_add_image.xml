@@ -20,7 +20,7 @@
           android:paddingTop="16dp"
           android:paddingEnd="24dp"
           android:paddingBottom="16dp"
-          android:text="Add Image"
+          android:text="@string/title"
           android:textColor="#fff"
           android:textStyle="bold"
           app:layout_constraintStart_toStartOf="parent"
@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
-        android:text="Enter Image Dimensions"
+        android:text="@string/Image_dimensionTV"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Title" />
 
@@ -45,7 +45,7 @@
         android:layout_marginLeft="24dp"
         android:layout_marginTop="8dp"
         android:layout_marginRight="8dp"
-        android:hint="Width"
+        android:hint="@string/Width"
         app:layout_constraintEnd_toStartOf="@+id/heightInput"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,7 +68,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginRight="24dp"
-        android:hint="Height"
+        android:hint="@string/Height"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/widthInput"
@@ -91,7 +91,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="16dp"
-        android:text="FETCH IMAGE"
+        android:text="@string/fetchImage"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/heightInput" />
@@ -110,7 +110,7 @@
           android:layout_marginStart="16dp"
           android:layout_marginTop="16dp"
           android:layout_marginEnd="16dp"
-          android:text="Fetching random image....."
+          android:text="@string/FetchingImagePB"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toBottomOf="@+id/Title" />
@@ -138,7 +138,6 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
         android:adjustViewBounds="true"
-        android:src="@drawable/ocean"
         app:layout_constraintEnd_toStartOf="@+id/progressSubtitle"
         app:layout_constraintStart_toStartOf="@+id/progressSubtitle"
         app:layout_constraintTop_toBottomOf="@id/Title" />
@@ -150,7 +149,7 @@
           android:layout_height="wrap_content"
           android:layout_marginStart="24dp"
           android:layout_marginTop="16dp"
-          android:text="Choose a Palette color"
+          android:text="@string/Palette_ColorTV"
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
@@ -176,7 +175,7 @@
           android:layout_height="wrap_content"
           android:layout_marginStart="24dp"
           android:layout_marginTop="16dp"
-          android:text="Choose a label"
+          android:text="@string/LabelTV"
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toBottomOf="@+id/colorChips" />
 
@@ -202,7 +201,7 @@
           android:layout_marginStart="24dp"
           android:layout_marginTop="8dp"
           android:layout_marginEnd="24dp"
-          android:hint="Label"
+          android:hint="@string/Labelhint"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toBottomOf="@+id/labelChips">
@@ -222,7 +221,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="16dp"
-        android:text="ADD"
+        android:text="@string/AddBtnText"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/customLabelInput" />

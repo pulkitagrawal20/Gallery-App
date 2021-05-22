@@ -2,7 +2,6 @@ package com.example.android.galleryapp;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.text.Editable;
@@ -14,16 +13,16 @@ import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.android.galleryapp.Models.Item;
 import com.example.android.galleryapp.databinding.ChipColorBinding;
 import com.example.android.galleryapp.databinding.ChipLabelBinding;
 import com.example.android.galleryapp.databinding.DialogAddImageBinding;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.progressindicator.LinearProgressIndicator;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -35,6 +34,7 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
     private boolean isCustomLabel;
     private Bitmap image;
     private AlertDialog dialog;
+    private String imageUrl;
 
     void show(Context context,OnCompleteListener listener){
         this.context=context;
@@ -54,6 +54,7 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
         //Create and Show Dialog:
          dialog= new MaterialAlertDialogBuilder(context,R.style.CustomDialogTheme)
                 .setView(b.getRoot())
+                 .setCancelable(false)
                 .show();
 
         //Handle events:
@@ -86,17 +87,29 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
                 //Square image:
                 if (widthStr.isEmpty()) {
                     int height = Integer.parseInt(heightStr);
-                    fetchRandomImage(height);
+                    try {
+                        fetchRandomImage(height);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 else if (heightStr.isEmpty()) {
                     int width = Integer.parseInt(widthStr);
-                    fetchRandomImage(width);
+                    try {
+                        fetchRandomImage(width);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 //Rectangle image:
                 else{
                     int height = Integer.parseInt(heightStr);
                     int width = Integer.parseInt(widthStr);
-                    fetchRandomImage(width,height);
+                    try {
+                        fetchRandomImage(width,height);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -110,30 +123,40 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
     //Step 2: Fetch Random Image:
     //Rectangular image:
 
-    private void fetchRandomImage(int width, int height) {
+    private void fetchRandomImage(int width, int height) throws IOException {
         new itemHelper()
                 .fetchData(width, height, context,this );
     }
 
     //Square image:
-    private void fetchRandomImage(int x) {
+    private void fetchRandomImage(int x) throws IOException {
         new itemHelper()
                 .fetchData(x, context, this);
     }
 
     //Show Data:
 
-    private void showData(Bitmap image, Set<Integer> colors, List<String> labels) {
-        this.image = image;
-        b.imageView.setImageBitmap(image);
-        inflateColorChips(colors);
-        inflateLabelChips(labels);
-        handleCustomLabelInput();
-        handleAddImageEvent();
-
+    private void showData(String url, Set<Integer> colors, List<String> labels) {
+        //Set url of the image:
+        this.imageUrl = url;
+        //Making process indicator gone and image visible:
         b.progressIndicatorRoot.setVisibility(View.GONE);
         b.mainRoot.setVisibility(View.VISIBLE);
         b.customLabelInput.setVisibility(View.GONE);
+
+        //Setting image view in binding:
+        Glide.with(context)
+                .load(url)
+                .into(b.imageView);
+
+        //Inflating label and color chips in binding:
+        inflateColorChips(colors);
+        inflateLabelChips(labels);
+
+        //Handling Events:
+        handleCustomLabelInput();
+        handleAddImageEvent();
+
     }
     private void handleAddImageEvent() {
         b.AddButton.setOnClickListener(new View.OnClickListener() {
@@ -163,7 +186,7 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
 
                 int color=((Chip)b.colorChips.findViewById(colorChipId)).getChipBackgroundColor().getDefaultColor();
 
-                listener.onImageAdded(new Item(image,color,label));
+                listener.onImageAdded(new Item(imageUrl,color,label));
 
                 dialog.dismiss();
             }
@@ -229,8 +252,8 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
     }
 
     @Override
-    public void onFetched(Bitmap image, Set<Integer> colors, List<String> labels) {
-        showData(image,colors,labels);
+    public void onFetched(String url, Set<Integer> colors, List<String> labels) {
+        showData(url,colors,labels);
     }
 
     @Override

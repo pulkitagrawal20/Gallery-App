@@ -2,7 +2,6 @@ package com.example.android.galleryapp;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
@@ -12,16 +11,15 @@ import androidx.palette.graphics.Palette;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.label.ImageLabel;
 import com.google.mlkit.vision.label.ImageLabeler;
 import com.google.mlkit.vision.label.ImageLabeling;
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -35,29 +33,40 @@ public class itemHelper {
 
     private Bitmap bitmap;
     private Set<Integer> colors;
-    private String url;
+    private String redURL;
 
     //Triggers...............................
 
     //For Rectangular image:
-    void fetchData(int x, int y, Context context, OnCompleteListener listener) {
+    void fetchData(int x, int y, Context context, OnCompleteListener listener) throws IOException {
         this.context = context;
 
         this.listener = listener;
 
-        fetchImage(
+        fetchUrl(
                 String.format(rectangularImageURL, x, y)
         );
     }
 
     //For Square image:
-    void fetchData(int x, Context context, OnCompleteListener listener) {
+    void fetchData(int x, Context context, OnCompleteListener listener) throws IOException {
         this.context = context;
         this.listener = listener;
 
-        fetchImage(
+        fetchUrl(
                 String.format(squareImageURL, x)
         );
+    }
+
+    //Fetching URL:
+    void fetchUrl(String url) throws IOException{
+        new RedirectURLHelper().fetchRedUrl(new RedirectURLHelper.OnFetchedUrlListener() {
+            @Override
+            public void OnFetchedURL(String url) {
+                redURL = url;
+                fetchImage(redURL);
+            }
+        }).execute(url);
     }
 
 
@@ -70,7 +79,7 @@ public class itemHelper {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                         bitmap = resource;
-                        ExtractPaletteFromBitmap();
+                        extractPaletteFromBitmap();
                     }
 
                     @Override
@@ -87,7 +96,7 @@ public class itemHelper {
     }
 
     //PaletteHelper..............................
-    private void ExtractPaletteFromBitmap(){
+    private void extractPaletteFromBitmap(){
         Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
             public void onGenerated(Palette p) {
                 colors= getColorsFromPalette(p);
@@ -127,7 +136,7 @@ public class itemHelper {
                         for(ImageLabel label:labels){
                             strings.add(label.getText());
                         }
-                        listener.onFetched(bitmap,colors,strings);
+                        listener.onFetched(redURL,colors,strings);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -141,7 +150,7 @@ public class itemHelper {
     //Listener...................
     interface OnCompleteListener{
 
-        void onFetched(Bitmap image, Set<Integer> colors, List<String> labels);
+        void onFetched(String url, Set<Integer> colors, List<String> labels);
         void onError(String error);
     }
 }

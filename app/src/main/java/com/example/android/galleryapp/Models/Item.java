@@ -1,17 +1,13 @@
 package com.example.android.galleryapp.Models;
 
-import android.graphics.Bitmap;
-
-import java.lang.reflect.Constructor;
-
 public class Item {
-   public Bitmap image;
+   public String url;
    public String label;
    public int color;
 
-    public Item(Bitmap image,int color,String label){
+    public Item(String url, int color, String label){
 
-        this.image = image;
+        this.url = url;
         this.color = color;
         this.label = label;
     }

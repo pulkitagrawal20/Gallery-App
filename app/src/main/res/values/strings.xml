@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Gallery App</string>
+    <string name="title">Add Image</string>
+    <string name="Image_dimensionTV">Enter Image Dimensions</string>
+    <string name="Width">Width</string>
+    <string name="Height">Height</string>
+    <string name="fetchImage">Fetch Image</string>
+    <string name="FetchingImagePB">Fetching Random Image.........</string>
+    <string name="Palette_ColorTV">Choose a Palette color</string>
+    <string name="LabelTV">Choose a Label</string>
+    <string name="Labelhint">Label</string>
+    <string name="AddBtnText">ADD</string>
+    <string name="no_items_try_adding_from_the_action_above">No Items...Add from Action above</string>
 </resources>
