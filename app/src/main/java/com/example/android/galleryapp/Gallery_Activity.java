@@ -1,17 +1,24 @@
   package com.example.android.galleryapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.android.galleryapp.Models.Item;
 import com.example.android.galleryapp.databinding.ActivityGalleryBinding;
+import com.example.android.galleryapp.databinding.DialogAddfromDeviceBinding;
 import com.example.android.galleryapp.databinding.ItemCardBinding;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -20,10 +27,12 @@ import java.util.ArrayList;
 import java.util.List;
 
   public class Gallery_Activity extends AppCompatActivity {
+      private static final int RESULT_LOAD_IMAGE =0;
       ActivityGalleryBinding b;
       List<Item> items=new ArrayList<>();
       SharedPreferences preferences;
       private List<String>urls=new ArrayList<>();
+      private Menu globalMenuItem;
 
       @Override
       protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +42,13 @@ import java.util.List;
           b = ActivityGalleryBinding.inflate((getLayoutInflater()));
           setContentView(b.getRoot());
 
-          if(!items.isEmpty()){
-              b.itemsList.setVisibility(View.GONE);
-          }
 
           preferences= getPreferences(MODE_PRIVATE);
           getDataFromSharedPreferences();
 
+          if(!items.isEmpty()){
+              b.itemsList.setVisibility(View.GONE);
+          }
       }
 
 
@@ -55,7 +64,18 @@ import java.util.List;
               showAddImageDialog();
               return true;
           }
+          if(item.getItemId()==R.id.AddFromGallery){
+              addFromGallery();
+          }
           return false;
+      }
+
+      private void addFromGallery() {
+          Intent intent=new Intent(
+                  Intent.ACTION_PICK,
+                  MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+          startActivityForResult(intent,RESULT_LOAD_IMAGE);
       }
 
       private void showAddImageDialog() {
@@ -81,7 +101,7 @@ import java.util.List;
       private void inflateViewForItem(Item item) {
 
           //Inflate Layout:
-          ItemCardBinding binding=ItemCardBinding.inflate(getLayoutInflater());
+          ItemCardBinding binding = ItemCardBinding.inflate(getLayoutInflater());
 
           //Bind Data:
           Glide.with(this)
@@ -110,6 +130,39 @@ import java.util.List;
 
               items.add(item);
               inflateViewForItem(item);
+          }
+      }
+
+      @Override
+      protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+          super.onActivityResult(requestCode, resultCode, data);
+          if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+              Uri selectedImage = data.getData();
+              String[] filePathColumn = {MediaStore.Images.Media.DATA};
+              Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+              cursor.moveToFirst();
+              int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+              String picturePath = cursor.getString(columnIndex);
+              cursor.close();
+
+              String uri = selectedImage.toString();
+
+              new addFromDevice().show(this, uri, new addFromDevice.OnCompleteListener() {
+                  @Override
+                  public void onAddCompleted(Item item) {
+                      items.add(item);
+                      inflateViewForItem(item);
+                      b.itemsList.setVisibility(View.GONE);
+                  }
+
+                  @Override
+                  public void onError(String error) {
+                      new MaterialAlertDialogBuilder(Gallery_Activity.this)
+                              .setTitle("ERROR")
+                              .setMessage(error)
+                              .show();
+                  }
+              });
           }
       }
 

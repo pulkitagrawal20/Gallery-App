@@ -1,20 +1,30 @@
 package com.example.android.galleryapp;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.android.galleryapp.Models.Item;
 import com.example.android.galleryapp.databinding.ChipColorBinding;
 import com.example.android.galleryapp.databinding.ChipLabelBinding;
@@ -23,6 +33,7 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Set;
 
@@ -139,15 +150,6 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
     private void showData(String url, Set<Integer> colors, List<String> labels) {
         //Set url of the image:
         this.imageUrl = url;
-        //Making process indicator gone and image visible:
-        b.progressIndicatorRoot.setVisibility(View.GONE);
-        b.mainRoot.setVisibility(View.VISIBLE);
-        b.customLabelInput.setVisibility(View.GONE);
-
-        //Setting image view in binding:
-        Glide.with(context)
-                .load(url)
-                .into(b.imageView);
 
         //Inflating label and color chips in binding:
         inflateColorChips(colors);
@@ -156,8 +158,70 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
         //Handling Events:
         handleCustomLabelInput();
         handleAddImageEvent();
+        handleShareImageEvent();
+
+        //Setting image view in binding:
+        Glide.with(context)
+                .asBitmap()
+                .load(url)
+                .into(b.imageView);
+        //Making process indicator gone and image visible:
+        b.progressIndicatorRoot.setVisibility(View.GONE);
+        b.mainRoot.setVisibility(View.VISIBLE);
+        b.customLabelInput.setVisibility(View.GONE);
 
     }
+
+    private void handleShareImageEvent() {
+        b.shareImgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try{
+                    Glide.with(context)
+                            .asBitmap()
+                            .load(imageUrl)
+                            .into(new CustomTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                    // Calling the intent to share the bitmap
+                                    Bitmap icon = resource;
+                                    Intent share = new Intent(Intent.ACTION_SEND);
+                                    share.setType("image/jpeg");
+
+                                    ContentValues values = new ContentValues();
+                                    values.put(MediaStore.Images.Media.TITLE, "title");
+                                    values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                                    Uri uri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                            values);
+
+
+                                    OutputStream outputStream;
+                                    try {
+                                        outputStream = context.getContentResolver().openOutputStream(uri);
+                                        icon.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                                        outputStream.close();
+                                    } catch (Exception e) {
+                                        System.err.println(e.toString());
+                                    }
+
+                                    share.putExtra(Intent.EXTRA_STREAM, uri);
+                                    context.startActivity(Intent.createChooser(share, "Share Image"));
+                                }
+
+                                @Override
+                                public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                                }
+                            });
+
+                } catch (Exception e) {
+                    Log.e("Error on sharing", e + " ");
+                    Toast.makeText(context, "App not Installed", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
     private void handleAddImageEvent() {
         b.AddButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,6 +256,7 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
             }
 
         });
+
     }
 
     private void handleCustomLabelInput() {
@@ -202,10 +267,8 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
         binding.getRoot().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
                     b.customLabelInput.setVisibility(isChecked ? View.VISIBLE : View.GONE);
                     isCustomLabel= isChecked;
-                }
             }
         });
     }
