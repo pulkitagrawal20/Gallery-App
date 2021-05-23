@@ -8,6 +8,10 @@ A simple gallery Application to Add images with Title:
 
 -Fetch colors and labels according to image and make an image cardview according to it.
 
+-Adding Image From Device Gallery.
+
+-Share Image To Different Apps.
+
 -Save data in shared preferences
 
 -Performs async task to get redirected
