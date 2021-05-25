@@ -1,11 +1,14 @@
 package com.example.android.galleryapp;
 
+import android.nfc.Tag;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.Time;
 
 
 public class RedirectURLHelper extends AsyncTask<String ,Void,String> {
@@ -26,6 +29,7 @@ public class RedirectURLHelper extends AsyncTask<String ,Void,String> {
         InputStream inputStream=null;
         try{
             connection= (HttpURLConnection) new URL(url).openConnection();
+            connection.setInstanceFollowRedirects(false);
         }catch (IOException e){
             e.printStackTrace();
         }

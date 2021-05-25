@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/CardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardCornerRadius="20dp"
-        android:foreground="?attr/selectableItemBackground"
         android:clickable="true"
-        android:focusable="true"
         android:elevation="8dp"
         android:layout_margin="4dp">
 
@@ -36,8 +34,17 @@
                 android:textColor="#FFF"
                 android:padding="8dp"/>
 
-            </LinearLayout>
+            <ImageButton
+                android:id="@+id/shareButton"
+                android:layout_width="49dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@null"
+                android:src="@drawable/ic_baseline_share_24"
+                android:drawablePadding="5dp" />
+
+
+        </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
-
-</FrameLayout>
+</RelativeLayout>

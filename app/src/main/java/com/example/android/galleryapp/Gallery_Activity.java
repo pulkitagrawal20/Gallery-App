@@ -4,9 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -18,11 +20,11 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.android.galleryapp.Models.Item;
 import com.example.android.galleryapp.databinding.ActivityGalleryBinding;
-import com.example.android.galleryapp.databinding.DialogAddfromDeviceBinding;
 import com.example.android.galleryapp.databinding.ItemCardBinding;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.gson.Gson;
 
-import java.io.ObjectInputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +33,7 @@ import java.util.List;
       ActivityGalleryBinding b;
       List<Item> items=new ArrayList<>();
       SharedPreferences preferences;
-      private List<String>urls=new ArrayList<>();
-      private Menu globalMenuItem;
+      private ItemCardBinding binding;
 
       @Override
       protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,6 @@ import java.util.List;
           b = ActivityGalleryBinding.inflate((getLayoutInflater()));
           setContentView(b.getRoot());
 
-
           preferences= getPreferences(MODE_PRIVATE);
           getDataFromSharedPreferences();
 
@@ -50,6 +50,7 @@ import java.util.List;
               b.itemsList.setVisibility(View.GONE);
           }
       }
+
 
 
       @Override
@@ -85,7 +86,7 @@ import java.util.List;
                       public void onImageAdded(Item item) {
                           items.add(item);
                           inflateViewForItem(item);
-                          b.itemsList.setVisibility(View.GONE);
+                          shareItem();
                       }
 
                       @Override
@@ -101,7 +102,7 @@ import java.util.List;
       private void inflateViewForItem(Item item) {
 
           //Inflate Layout:
-          ItemCardBinding binding = ItemCardBinding.inflate(getLayoutInflater());
+          binding = ItemCardBinding.inflate(getLayoutInflater());
 
           //Bind Data:
           Glide.with(this)
@@ -110,27 +111,41 @@ import java.util.List;
 
           binding.title.setText(item.label);
           binding.title.setBackgroundColor(item.color);
-          urls.add(item.url);
 
 
           //Add it to the List:
           b.List.addView(binding.getRoot());
+          shareItem();
+
+          if (items.isEmpty()) {
+              b.itemsList.setVisibility(View.VISIBLE);
+          } else {
+              b.itemsList.setVisibility(View.GONE);
+          }
       }
 
 
       private void getDataFromSharedPreferences() {
           int itemCount=preferences.getInt(Constants.NO_OF_IMAGES,0);
-          if(itemCount!=0){
-              b.itemsList.setVisibility(View.GONE);
-          }
-          for (int i=0;i<itemCount;i++){
-              Item item=new Item(preferences.getString(Constants.IMAGE+i,"")
-                      ,preferences.getInt(Constants.COLOR+i,0)
-                      ,preferences.getString(Constants.LABEL+i,""));
 
+          for (int i=1;i<=itemCount;i++){
+              //Make a new item and get objects from json:
+              Item item= itemFromJson(preferences.getString(Constants.ITEMS+i,""));
               items.add(item);
               inflateViewForItem(item);
           }
+      }
+
+      //To get Json for the Item...
+      private String jsonFromItem(Item item){
+          Gson json=new Gson();
+          return json.toJson(item);
+      }
+
+      //To get Item from Json...
+      private Item itemFromJson(String string){
+          Gson json2= new Gson();
+          return json2.fromJson(string,Item.class);
       }
 
       @Override
@@ -166,24 +181,68 @@ import java.util.List;
           }
       }
 
+      public static Bitmap loadBitmapFromView(View v) {
+          Bitmap bitmap;
+          v.setDrawingCacheEnabled(true);
+          bitmap = Bitmap.createBitmap(v.getDrawingCache());
+          v.setDrawingCacheEnabled(false);
+          return bitmap;
+      }
+
+      private void shareItem(){
+          binding.shareButton.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+
+                  Bitmap icon = loadBitmapFromView(b.List);
+
+                  // Calling the intent to share the bitmap
+                  Intent share = new Intent(Intent.ACTION_SEND);
+                  share.setType("image/jpeg");
+
+                  ContentValues values = new ContentValues();
+                  values.put(MediaStore.Images.Media.TITLE, "title");
+                  values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                  Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                          values);
+
+
+                  OutputStream outputStream;
+                  try {
+                      outputStream = getContentResolver().openOutputStream(uri);
+                      icon.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                      outputStream.close();
+                  } catch (Exception e) {
+                      System.err.println(e.toString());
+                  }
+
+                  share.putExtra(Intent.EXTRA_STREAM, uri);
+                  startActivity(Intent.createChooser(share, "Share Image"));
+              }
+      });
+
+      }
+
       @Override
       protected void onPause() {
           super.onPause();
-          int numOfImage=items.size();
-          preferences.edit().putInt(Constants.NO_OF_IMAGES,numOfImage).apply();
 
-          int imageCount=0;
-          for(Item item:items){
-              preferences.edit()
-                      .putInt(Constants.COLOR+imageCount,item.color)
-                      .putString(Constants.LABEL+imageCount,item.label)
-                      .putString(Constants.IMAGE+imageCount,urls.get(imageCount))
-                      .apply();
+          // Putting all the objects in the shared preferences
+          int itemCount = 0;
+          for (Item item : items) {
+              // Check for the item
+              if (item != null) {
+                  // incrementing the index
+                  itemCount++;
 
-              imageCount++;
-
+                  // Saving the item in the shared preferences
+                  preferences.edit()
+                          .putString(Constants.ITEMS + itemCount, jsonFromItem(item))
+                          .apply();
+              }
           }
-          preferences.edit().commit();
+          preferences.edit()
+                  .putInt(Constants.NO_OF_IMAGES, itemCount)
+                  .apply();
       }
   }
-

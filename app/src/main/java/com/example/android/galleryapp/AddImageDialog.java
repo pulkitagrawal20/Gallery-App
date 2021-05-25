@@ -158,7 +158,6 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
         //Handling Events:
         handleCustomLabelInput();
         handleAddImageEvent();
-        handleShareImageEvent();
 
         //Setting image view in binding:
         Glide.with(context)
@@ -172,55 +171,6 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
 
     }
 
-    private void handleShareImageEvent() {
-        b.shareImgBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try{
-                    Glide.with(context)
-                            .asBitmap()
-                            .load(imageUrl)
-                            .into(new CustomTarget<Bitmap>() {
-                                @Override
-                                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                                    // Calling the intent to share the bitmap
-                                    Bitmap icon = resource;
-                                    Intent share = new Intent(Intent.ACTION_SEND);
-                                    share.setType("image/jpeg");
-
-                                    ContentValues values = new ContentValues();
-                                    values.put(MediaStore.Images.Media.TITLE, "title");
-                                    values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-                                    Uri uri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                                            values);
-
-
-                                    OutputStream outputStream;
-                                    try {
-                                        outputStream = context.getContentResolver().openOutputStream(uri);
-                                        icon.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-                                        outputStream.close();
-                                    } catch (Exception e) {
-                                        System.err.println(e.toString());
-                                    }
-
-                                    share.putExtra(Intent.EXTRA_STREAM, uri);
-                                    context.startActivity(Intent.createChooser(share, "Share Image"));
-                                }
-
-                                @Override
-                                public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                                }
-                            });
-
-                } catch (Exception e) {
-                    Log.e("Error on sharing", e + " ");
-                    Toast.makeText(context, "App not Installed", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
 
     private void handleAddImageEvent() {
         b.AddButton.setOnClickListener(new View.OnClickListener() {
