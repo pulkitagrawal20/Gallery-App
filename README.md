@@ -10,7 +10,7 @@ A simple gallery Application to Add images with Title:
 
 -Adding Image From Device Gallery.
 
--Share Image To Different Apps.
+-Share Items for card view To Different Apps.
 
 -Save data in shared preferences
 
