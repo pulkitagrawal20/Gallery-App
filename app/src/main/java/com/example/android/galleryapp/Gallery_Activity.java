@@ -3,6 +3,9 @@
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -15,9 +18,8 @@ import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.SearchView;
 
-import com.bumptech.glide.Glide;
 import com.example.android.galleryapp.Models.Item;
 import com.example.android.galleryapp.databinding.ActivityGalleryBinding;
 import com.example.android.galleryapp.databinding.ItemCardBinding;
@@ -34,6 +36,8 @@ import java.util.List;
       List<Item> items=new ArrayList<>();
       SharedPreferences preferences;
       private ItemCardBinding binding;
+      ListItemAdapter adapter;
+      private String imageUrl;
 
       @Override
       protected void onCreate(Bundle savedInstanceState) {
@@ -47,18 +51,65 @@ import java.util.List;
           getDataFromSharedPreferences();
 
           if(!items.isEmpty()){
-              b.itemsList.setVisibility(View.GONE);
+              showListItems(items);
+              //b.itemsList.setVisibility(View.GONE);
           }
       }
 
+      @Override
+      //Handling events of Context Menu Item Selection:
+      public boolean onContextItemSelected (MenuItem item) {
+          imageUrl = adapter.url;
+          int index= adapter.index;
+          binding= adapter.itemCardBinding;
+          //For edit image option::
+          if(item.getItemId()==R.id.editMenuItem){
+              new editImageDialog().show(this, imageUrl, new editImageDialog.OnCompleteListener() {
+                  @Override
+                  public void onEditCompleted(Item item) {
+                      items.set(index,item);
+                      adapter.notifyDataSetChanged();
+                  }
 
+                  @Override
+                  public void onError(String error) {
+                      new MaterialAlertDialogBuilder(Gallery_Activity.this)
+                              .setTitle("Error")
+                              .setMessage(error)
+                              .show();
+                  }
+              });
+          }
+          //For share image option:
+          if(item.getItemId()==R.id.shareImage)
+              shareItem(binding);
+          return true;
+      }
 
       @Override
       public boolean onCreateOptionsMenu(Menu menu) {
           getMenuInflater().inflate(R.menu.gallery,menu);
+
+          SearchView searchView=(SearchView)menu.findItem(R.id.search).getActionView();
+
+          //Listener to add Search Function of adapter:
+          searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+              @Override
+              public boolean onQueryTextSubmit(String query) {
+                  adapter.filter(query);
+                  return false;
+              }
+
+              @Override
+              public boolean onQueryTextChange(String newText) {
+                  adapter.filter(newText);
+                  return false;
+              }
+          });
           return true;
       }
 
+      //Shows Icons In menu:
       @Override
       public boolean onOptionsItemSelected(@NonNull MenuItem item) {
           if(item.getItemId()==R.id.add_image){
@@ -68,8 +119,25 @@ import java.util.List;
           if(item.getItemId()==R.id.AddFromGallery){
               addFromGallery();
           }
+          if(item.getItemId()==R.id.sorting){
+              adapter.sortAlpha();
+          }
           return false;
       }
+
+      //Callback for swipe options:
+      ItemTouchHelper.SimpleCallback callback=new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT|ItemTouchHelper.RIGHT) {
+          @Override
+          public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+              return false;
+          }
+
+          @Override
+          public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                items.remove(viewHolder.getAdapterPosition());
+                adapter.notifyDataSetChanged();
+          }
+      };
 
       private void addFromGallery() {
           Intent intent=new Intent(
@@ -85,8 +153,7 @@ import java.util.List;
                       @Override
                       public void onImageAdded(Item item) {
                           items.add(item);
-                          inflateViewForItem(item);
-                          shareItem();
+                          showListItems(items);
                       }
 
                       @Override
@@ -99,25 +166,20 @@ import java.util.List;
                   });
       }
 
-      private void inflateViewForItem(Item item) {
+      private void showListItems(List<Item> item) {
+          adapter = new ListItemAdapter(this, items);
+          b.List.setLayoutManager(new LinearLayoutManager(this));
 
-          //Inflate Layout:
-          binding = ItemCardBinding.inflate(getLayoutInflater());
+          ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
+          adapter.setListItemAdapterHelper(itemTouchHelper);
+          itemTouchHelper.attachToRecyclerView(b.List);
+          ItemTouchHelper.Callback callback2 = new ItemAdapterHelper(adapter);
+          ItemTouchHelper itemTouchHelper1 = new ItemTouchHelper(callback2);
+          adapter.setListItemAdapterHelper(itemTouchHelper1);
+          itemTouchHelper1.attachToRecyclerView(b.List);
+          b.List.setAdapter(adapter);
 
-          //Bind Data:
-          Glide.with(this)
-                  .load(item.url)
-                  .into(binding.ImageView);
-
-          binding.title.setText(item.label);
-          binding.title.setBackgroundColor(item.color);
-
-
-          //Add it to the List:
-          b.List.addView(binding.getRoot());
-          shareItem();
-
-          if (items.isEmpty()) {
+         if (items.isEmpty()) {
               b.itemsList.setVisibility(View.VISIBLE);
           } else {
               b.itemsList.setVisibility(View.GONE);
@@ -132,8 +194,8 @@ import java.util.List;
               //Make a new item and get objects from json:
               Item item= itemFromJson(preferences.getString(Constants.ITEMS+i,""));
               items.add(item);
-              inflateViewForItem(item);
           }
+          showListItems(items);
       }
 
       //To get Json for the Item...
@@ -166,7 +228,7 @@ import java.util.List;
                   @Override
                   public void onAddCompleted(Item item) {
                       items.add(item);
-                      inflateViewForItem(item);
+                      showListItems(items);
                       b.itemsList.setVisibility(View.GONE);
                   }
 
@@ -189,10 +251,7 @@ import java.util.List;
           return bitmap;
       }
 
-      private void shareItem(){
-          binding.shareButton.setOnClickListener(new View.OnClickListener() {
-              @Override
-              public void onClick(View v) {
+      private void shareItem(ItemCardBinding binding){
 
                   Bitmap icon = loadBitmapFromView(b.List);
 
@@ -219,9 +278,7 @@ import java.util.List;
                   share.putExtra(Intent.EXTRA_STREAM, uri);
                   startActivity(Intent.createChooser(share, "Share Image"));
               }
-      });
 
-      }
 
       @Override
       protected void onPause() {

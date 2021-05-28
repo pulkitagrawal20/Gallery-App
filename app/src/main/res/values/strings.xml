@@ -8,9 +8,14 @@
     <string name="FetchingImagePB">Fetching Random Image.........</string>
     <string name="Palette_ColorTV">Choose a Palette color</string>
     <string name="LabelTV">Choose a Label</string>
-    <string name="Labelhint">Label</string>
+    <string name="LabelHint">Label</string>
     <string name="AddBtnText">ADD</string>
     <string name="no_items_try_adding_from_the_action_above">“No items. Try adding from the action above"</string>
     <string name="Update_and_add_from_Gallery">ADD</string>
     <string name="share_image">Share Image</string>
+    <string name="Edit_and_update_changes">UPDATE</string>
+    <string name="new_Palette_ColorTV">Choose the new Palette color</string>
+    <string name="new_LabelTV">Choose a new Label</string>
+    <string name="search">Search</string>
+    <string name="Sort_Alphabetically">Sort</string>
 </resources>

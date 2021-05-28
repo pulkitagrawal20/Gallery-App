@@ -29,7 +29,7 @@ public class RedirectURLHelper extends AsyncTask<String ,Void,String> {
         InputStream inputStream=null;
         try{
             connection= (HttpURLConnection) new URL(url).openConnection();
-            connection.setInstanceFollowRedirects(false);
+           // connection.setInstanceFollowRedirects(false);
         }catch (IOException e){
             e.printStackTrace();
         }

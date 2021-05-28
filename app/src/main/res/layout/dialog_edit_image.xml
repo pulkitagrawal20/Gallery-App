@@ -10,7 +10,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/deviceImageView"
+            android:id="@+id/editedImageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -24,19 +24,19 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/dPaletteColorTV"
+            android:id="@+id/ePaletteColorTV"
             style="@style/TextAppearance.MaterialComponents.Headline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
-            android:text="@string/Palette_ColorTV"
+            android:text="@string/new_Palette_ColorTV"
             android:visibility="visible"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/deviceImageView" />
+            app:layout_constraintTop_toBottomOf="@+id/editedImageView" />
 
         <com.google.android.material.chip.ChipGroup
-            android:id="@+id/dColorChips"
+            android:id="@+id/eColorChips"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -44,25 +44,25 @@
             android:layout_marginEnd="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/dPaletteColorTV"
+            app:layout_constraintTop_toBottomOf="@id/ePaletteColorTV"
             app:singleSelection="true">
 
 
         </com.google.android.material.chip.ChipGroup>
 
         <TextView
-            android:id="@+id/dChooseLabelTitle"
+            android:id="@+id/eChooseLabelTitle"
             style="@style/TextAppearance.MaterialComponents.Headline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
-            android:text="@string/LabelTV"
+            android:text="@string/new_LabelTV"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dColorChips" />
+            app:layout_constraintTop_toBottomOf="@+id/eColorChips" />
 
         <com.google.android.material.chip.ChipGroup
-            android:id="@+id/dLabelChips"
+            android:id="@+id/eLabelChips"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -70,13 +70,13 @@
             android:layout_marginEnd="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/dChooseLabelTitle"
+            app:layout_constraintTop_toBottomOf="@id/eChooseLabelTitle"
             app:singleSelection="true">
 
         </com.google.android.material.chip.ChipGroup>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/dCustomLabelInput"
+            android:id="@+id/eCustomLabelInput"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -87,10 +87,10 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dLabelChips">
+            app:layout_constraintTop_toBottomOf="@+id/eLabelChips">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/dCustomLabelET"
+                android:id="@+id/eCustomLabelET"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text" />
@@ -98,16 +98,16 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/updateBtn"
+            android:id="@+id/updateButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="16dp"
-            android:text="@string/Update_and_add_from_Gallery"
+            android:text="@string/Edit_and_update_changes"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dCustomLabelInput" />
+            app:layout_constraintTop_toBottomOf="@+id/eCustomLabelInput" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
