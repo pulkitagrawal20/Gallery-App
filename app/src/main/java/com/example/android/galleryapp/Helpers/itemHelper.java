@@ -1,4 +1,4 @@
-package com.example.android.galleryapp;
+package com.example.android.galleryapp.Helpers;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,6 +11,7 @@ import androidx.palette.graphics.Palette;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.example.android.galleryapp.Helpers.RedirectURLHelper;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.mlkit.vision.common.InputImage;
@@ -38,7 +39,7 @@ public class itemHelper {
     //Triggers...............................
 
     //For Rectangular image:
-    void fetchData(int x, int y, Context context, OnCompleteListener listener) throws IOException {
+    public void fetchData(int x, int y, Context context, OnCompleteListener listener) throws IOException {
         this.context = context;
 
         this.listener = listener;
@@ -49,7 +50,7 @@ public class itemHelper {
     }
 
     //For Square image:
-    void fetchData(int x, Context context, OnCompleteListener listener) throws IOException {
+    public void fetchData(int x, Context context, OnCompleteListener listener) throws IOException {
         this.context = context;
         this.listener = listener;
 
@@ -65,6 +66,11 @@ public class itemHelper {
             public void OnFetchedURL(String url) {
                 redURL = url;
                 fetchImage(redURL);
+            }
+
+            @Override
+            public void onError(String error) {
+                listener.onError(error);
             }
         }).execute(url);
     }
@@ -148,7 +154,7 @@ public class itemHelper {
     }
 
     //Listener...................
-    interface OnCompleteListener{
+    public interface OnCompleteListener{
 
         void onFetched(String url, Set<Integer> colors, List<String> labels);
         void onError(String error);

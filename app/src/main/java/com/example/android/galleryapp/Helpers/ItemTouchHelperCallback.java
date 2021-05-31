@@ -1,14 +1,16 @@
-package com.example.android.galleryapp;
+package com.example.android.galleryapp.Helpers;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ItemAdapterHelper extends ItemTouchHelper.Callback {
-      ItemAdapterListener itemTouchHelperAdapter;
+import com.example.android.galleryapp.Adapters.ItemTouchHelperAdapter;
+
+public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
+      ItemTouchHelperAdapter itemTouchHelperAdapter;
 
       //Constructor for itemAdapterHelper:
-      public ItemAdapterHelper(ItemAdapterListener itemTouchHelperAdapter){
+      public ItemTouchHelperCallback(ItemTouchHelperAdapter itemTouchHelperAdapter){
           this.itemTouchHelperAdapter=itemTouchHelperAdapter;
       }
 
@@ -32,12 +34,12 @@ public class ItemAdapterHelper extends ItemTouchHelper.Callback {
     //CallBack(onMove):
     @Override
     public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-          itemTouchHelperAdapter.onItemDrag(viewHolder.getAdapterPosition(),target.getAdapterPosition());
+          itemTouchHelperAdapter.onItemMove(viewHolder.getAdapterPosition(),target.getAdapterPosition());
         return false;
     }
     //CallBack(onSwipe):
     @Override
     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-          itemTouchHelperAdapter.onItemSwipe(viewHolder.getAdapterPosition());
+          itemTouchHelperAdapter.onItemDismiss(viewHolder.getAdapterPosition());
     }
 }

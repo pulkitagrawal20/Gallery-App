@@ -1,4 +1,4 @@
-package com.example.android.galleryapp;
+package com.example.android.galleryapp.Adapters;
 
 import android.content.Context;
 import android.view.ContextMenu;
@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.android.galleryapp.Models.Item;
+import com.example.android.galleryapp.R;
 import com.example.android.galleryapp.databinding.ItemCardBinding;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ItemHolder> implements ItemAdapterListener {
+public class ListItemTouchHelperAdapter extends RecyclerView.Adapter<ListItemTouchHelperAdapter.ItemViewHolder> implements ItemTouchHelperAdapter {
     private Context context;
     private List<Item> items;
     private List<Item> itemsToShow;
@@ -31,7 +32,7 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ItemHo
     public ItemCardBinding itemCardBinding;
 
     //Constructor for ListItemAdapter:
-    public ListItemAdapter(Context context, List<Item>items){
+    public ListItemTouchHelperAdapter(Context context, List<Item>items){
 
         this.context = context;
         this.items = items;
@@ -41,17 +42,17 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ItemHo
 
     @NonNull
     @Override
-    public ItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         //Inflate layout:
         ItemCardBinding binding=ItemCardBinding.inflate(LayoutInflater.from(context),parent,false);
 
         //create and return ViewHolder:
-        return new ItemHolder(binding);
+        return new ItemViewHolder(binding);
     }
 
     @Override
     //Binding data to VH:
-    public void onBindViewHolder(@NonNull  ListItemAdapter.ItemHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
         //Inflate and bind Card:
         holder.binding.title.setText(itemsToShow.get(position).label);
         holder.binding.title.setBackgroundColor(itemsToShow.get(position).color);
@@ -92,15 +93,15 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ItemHo
     }
     @Override
     //Change card position on drag:
-    public void onItemDrag(int from,int to){
-        Item fromItem=items.get(from);
+    public void onItemMove(int fromPosition, int toPosition){
+        Item fromItem=items.get(fromPosition);
         items.remove(fromItem);
-        items.add(to,fromItem);
+        items.add(toPosition,fromItem);
         itemsToShow=items;
-        notifyItemMoved(from,to);
+        notifyItemMoved(fromPosition, toPosition);
     }
     @Override
-    public void onItemSwipe(int position){
+    public void onItemDismiss(int position){
         return;
     }
 
@@ -117,18 +118,18 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ItemHo
         notifyDataSetChanged();
     }
 
-    public class ItemHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener, View.OnTouchListener,GestureDetector.OnGestureListener{
+    public class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener, View.OnTouchListener,GestureDetector.OnGestureListener{
         public ItemCardBinding binding;
         GestureDetector gestureDetector;
 
-        public ItemHolder(@NonNull ItemCardBinding binding) {
+        public ItemViewHolder(@NonNull ItemCardBinding binding) {
             super(binding.getRoot());
             this.binding=binding;
             gestureDetector=new GestureDetector(binding.getRoot().getContext(), this);
             //Setting OnTouch Listener for drag item:
             binding.ImageView.setOnTouchListener(this);
             //Create context Menu:
-            binding.title.setOnCreateContextMenuListener (this);
+            binding.CardView.setOnCreateContextMenuListener (this);
         }
 
 
@@ -136,7 +137,7 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ItemHo
         //Context Menu For Edit and Share Options:
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
             menu.setHeaderTitle("Select Action");
-            menu.add(this.getAdapterPosition(),R.id.editMenuItem,0,"Edit");
+            menu.add(this.getAdapterPosition(), R.id.editMenuItem,0,"Edit");
             menu.add(this.getAdapterPosition(),R.id.shareImage,0,"Share");
             url=items.get(this.getAdapterPosition()).url;
             index=this.getAdapterPosition();

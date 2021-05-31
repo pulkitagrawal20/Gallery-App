@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -19,7 +20,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
+import android.widget.Toast;
 
+import com.example.android.galleryapp.Adapters.ListItemTouchHelperAdapter;
+import com.example.android.galleryapp.Helpers.ItemTouchHelperCallback;
 import com.example.android.galleryapp.Models.Item;
 import com.example.android.galleryapp.databinding.ActivityGalleryBinding;
 import com.example.android.galleryapp.databinding.ItemCardBinding;
@@ -36,8 +40,9 @@ import java.util.List;
       List<Item> items=new ArrayList<>();
       SharedPreferences preferences;
       private ItemCardBinding binding;
-      ListItemAdapter adapter;
+      ListItemTouchHelperAdapter adapter;
       private String imageUrl;
+      private Context context=this;
 
       @Override
       protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +56,11 @@ import java.util.List;
           getDataFromSharedPreferences();
 
           if(!items.isEmpty()){
-              showListItems(items);
-              //b.itemsList.setVisibility(View.GONE);
-          }
+              showListItems(items);}
+
+              else
+                  {b.itemsList.setVisibility(View.VISIBLE);}
+
       }
 
       @Override
@@ -135,6 +142,9 @@ import java.util.List;
           @Override
           public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 items.remove(viewHolder.getAdapterPosition());
+              Toast.makeText(context, "Image Removed", Toast.LENGTH_SHORT).show();
+              if (items.isEmpty())
+                  b.itemsList.setVisibility(View.VISIBLE);
                 adapter.notifyDataSetChanged();
           }
       };
@@ -154,6 +164,8 @@ import java.util.List;
                       public void onImageAdded(Item item) {
                           items.add(item);
                           showListItems(items);
+
+                          b.itemsList.setVisibility(View.GONE);
                       }
 
                       @Override
@@ -167,13 +179,13 @@ import java.util.List;
       }
 
       private void showListItems(List<Item> item) {
-          adapter = new ListItemAdapter(this, items);
+          adapter = new ListItemTouchHelperAdapter(this, items);
           b.List.setLayoutManager(new LinearLayoutManager(this));
 
           ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
           adapter.setListItemAdapterHelper(itemTouchHelper);
           itemTouchHelper.attachToRecyclerView(b.List);
-          ItemTouchHelper.Callback callback2 = new ItemAdapterHelper(adapter);
+          ItemTouchHelper.Callback callback2 = new ItemTouchHelperCallback(adapter);
           ItemTouchHelper itemTouchHelper1 = new ItemTouchHelper(callback2);
           adapter.setListItemAdapterHelper(itemTouchHelper1);
           itemTouchHelper1.attachToRecyclerView(b.List);

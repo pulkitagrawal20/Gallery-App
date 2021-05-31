@@ -1,30 +1,21 @@
 package com.example.android.galleryapp;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
+import com.example.android.galleryapp.Helpers.itemHelper;
 import com.example.android.galleryapp.Models.Item;
 import com.example.android.galleryapp.databinding.ChipColorBinding;
 import com.example.android.galleryapp.databinding.ChipLabelBinding;
@@ -33,7 +24,6 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Set;
 
@@ -275,7 +265,7 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
      listener.onError(error);
     }
 
-    interface OnCompleteListener{
+    public interface OnCompleteListener{
 
         void onImageAdded(Item item);
         void onError(String error);
