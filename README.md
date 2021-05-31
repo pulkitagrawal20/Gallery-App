@@ -14,6 +14,16 @@ A simple gallery Application to Add images with Title:
 
 -Save data in shared preferences
 
+-Drag and Drop
+
+-Sort Alphabetically
+
+-Context Menu
+
+-Edit iitems
+
+-recycler View
+
 -Performs async task to get redirected
 
 # Previews of the Application:
