@@ -30,6 +30,8 @@ public class ListItemTouchHelperAdapter extends RecyclerView.Adapter<ListItemTou
     public String url;
     public int index;
     public ItemCardBinding itemCardBinding;
+    public int mode;
+    public List<ItemViewHolder> holderList=new ArrayList<>();
 
     //Constructor for ListItemAdapter:
     public ListItemTouchHelperAdapter(Context context, List<Item>items){
@@ -54,6 +56,7 @@ public class ListItemTouchHelperAdapter extends RecyclerView.Adapter<ListItemTou
     //Binding data to VH:
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
         //Inflate and bind Card:
+        holderList.add(holder);
         holder.binding.title.setText(itemsToShow.get(position).label);
         holder.binding.title.setBackgroundColor(itemsToShow.get(position).color);
         Glide.with(context)
@@ -126,10 +129,22 @@ public class ListItemTouchHelperAdapter extends RecyclerView.Adapter<ListItemTou
             super(binding.getRoot());
             this.binding=binding;
             gestureDetector=new GestureDetector(binding.getRoot().getContext(), this);
-            //Setting OnTouch Listener for drag item:
-            binding.ImageView.setOnTouchListener(this);
-            //Create context Menu:
-            binding.CardView.setOnCreateContextMenuListener (this);
+            eventListenerHandler();
+        }
+
+        public void eventListenerHandler() {
+            if(mode==0){
+                binding.ImageView.setOnTouchListener(null);
+                binding.title.setOnTouchListener(null);
+                binding.title.setOnCreateContextMenuListener(this);
+                binding.ImageView.setOnCreateContextMenuListener(this);
+            }
+            else if(mode==1){
+                binding.title.setOnCreateContextMenuListener(null);
+                binding.ImageView.setOnCreateContextMenuListener(null);
+                binding.title.setOnTouchListener(this);
+                binding.ImageView.setOnTouchListener(this);
+            }
         }
 
 
@@ -172,6 +187,7 @@ public class ListItemTouchHelperAdapter extends RecyclerView.Adapter<ListItemTou
 
         @Override
         public void onLongPress(MotionEvent e) {
+            if(mode==1)
             mainItemTouchHelper.startDrag(this);
         }
 

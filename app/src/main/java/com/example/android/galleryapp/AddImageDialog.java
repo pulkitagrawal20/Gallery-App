@@ -34,6 +34,7 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
     private LayoutInflater inflater;
     private boolean isCustomLabel;
     private Bitmap image;
+    int flag=0;
     private AlertDialog dialog;
     private String imageUrl;
 
@@ -158,6 +159,28 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
         b.progressIndicatorRoot.setVisibility(View.GONE);
         b.mainRoot.setVisibility(View.VISIBLE);
         b.customLabelInput.setVisibility(View.GONE);
+
+    }
+
+    public void fetchDataForGallery(String url,Context context,OnCompleteListener listener){
+        this.listener = listener;
+        this.context = context;
+        flag=1;
+        if (context instanceof Gallery_Activity) {
+            inflater = ((Gallery_Activity) context).getLayoutInflater();
+            b = DialogAddImageBinding.inflate(inflater);
+        } else {
+            dialog.dismiss();
+            listener.onError("Cast Exception");
+            return;
+        }
+        dialog = new MaterialAlertDialogBuilder(context)
+                .setView(b.getRoot())
+                .show();
+        b.inputDimensionsRoot.setVisibility(View.GONE);
+        b.progressIndicatorRoot.setVisibility(View.VISIBLE);
+        new itemHelper()
+                .fetchData(url,context,this);
 
     }
 

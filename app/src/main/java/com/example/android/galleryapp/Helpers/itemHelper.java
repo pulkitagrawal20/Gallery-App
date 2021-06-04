@@ -59,6 +59,14 @@ public class itemHelper {
         );
     }
 
+    public void fetchData(String url,Context context,OnCompleteListener listener ){
+        this.context = context;
+        this.listener = listener;
+        redURL = url;
+        fetchImage(url);
+    }
+
+
     //Fetching URL:
     void fetchUrl(String url) throws IOException{
         new RedirectURLHelper().fetchRedUrl(new RedirectURLHelper.OnFetchedUrlListener() {
