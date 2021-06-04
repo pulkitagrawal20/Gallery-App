@@ -30,7 +30,6 @@ A simple gallery Application to Add images with Title:
 
 # Previews of the Application:
 ![b810fe5a-02cc-4134-b4d4-557c72ce8685](https://user-images.githubusercontent.com/69674896/120176309-bff44500-c224-11eb-90cd-8051d737b36a.jpg)
-
 ![fbd716f3-74c0-4401-88d3-921a2c919d44](https://user-images.githubusercontent.com/69674896/120176375-d3071500-c224-11eb-92db-d37fdb6451e9.jpg)
 ![31ac0c9e-53a1-4f77-94bc-d6b39b27c6c9](https://user-images.githubusercontent.com/69674896/120176486-f6ca5b00-c224-11eb-88d8-e839e33929df.jpg)
 ![14dc9146-be05-41e3-af0e-e9ce14f77f59](https://user-images.githubusercontent.com/69674896/120176507-ff229600-c224-11eb-9262-9a8a4d9ad7bc.jpg)
