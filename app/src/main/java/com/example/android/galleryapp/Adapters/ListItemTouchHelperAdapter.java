@@ -25,7 +25,7 @@ import java.util.List;
 public class ListItemTouchHelperAdapter extends RecyclerView.Adapter<ListItemTouchHelperAdapter.ItemViewHolder> implements ItemTouchHelperAdapter {
     private Context context;
     private List<Item> items;
-    private List<Item> itemsToShow;
+    public List<Item> itemsToShow;
     public ItemTouchHelper mainItemTouchHelper;
     public String url;
     public int index;

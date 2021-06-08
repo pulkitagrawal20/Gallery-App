@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -53,6 +52,7 @@ import java.util.List;
       ItemTouchHelper itemTouchHelper1;
       private String imageUrl;
       private Context context=this;
+      private boolean isEdited;
 
       @Override
       protected void onCreate(Bundle savedInstanceState) {
@@ -141,32 +141,35 @@ import java.util.List;
       @Override
       //Handling events of Context Menu Item Selection:
       public boolean onContextItemSelected (MenuItem item) {
-          imageUrl = adapter.url;
-          int index= adapter.index;
-          binding= adapter.itemCardBinding;
           //For edit image option::
           if(item.getItemId()==R.id.editMenuItem){
-              new editImageDialog().show(this, imageUrl, new editImageDialog.OnCompleteListener() {
-                  @Override
-                  public void onEditCompleted(Item item) {
-                      items.set(index,item);
-                      adapter.notifyDataSetChanged();
-                  }
-
-                  @Override
-                  public void onError(String error) {
-                      new MaterialAlertDialogBuilder(Gallery_Activity.this)
-                              .setTitle("Error")
-                              .setMessage(error)
-                              .show();
-                  }
-              });
+              editImage();
+              return true;
           }
           //For share image option:
           if(item.getItemId()==R.id.shareImage){
               sharePermission();
           return true;}
           return super.onContextItemSelected(item);
+      }
+
+      private void editImage() {
+          imageUrl = adapter.url;
+          int index= adapter.index;
+          binding= adapter.itemCardBinding;
+          new ImageDialog().editFetchImage(this, items.get(index), new ImageDialog.OnCompleteListener() {
+              @Override
+              public void onImageAdded(Item item) {
+                  items.set(index,item);
+                  adapter.notifyDataSetChanged();
+
+              }
+
+              @Override
+              public void onError(String error) {
+
+              }
+          });
       }
 
       private void sharePermission() {
@@ -264,8 +267,8 @@ import java.util.List;
       }
 
       private void showAddImageDialog() {
-          new AddImageDialog()
-                  .show(this, new AddImageDialog.OnCompleteListener() {
+          new ImageDialog()
+                  .showDialog(this, new ImageDialog.OnCompleteListener() {
                       @Override
                       public void onImageAdded(Item item) {
                           items.add(item);
@@ -339,7 +342,7 @@ import java.util.List;
               Uri selectedImage = data.getData();
               String uri = selectedImage.toString();
 
-              new AddImageDialog().fetchDataForGallery(uri,this, new AddImageDialog.OnCompleteListener() {
+              new ImageDialog().fetchDataForGallery(uri,this, new ImageDialog.OnCompleteListener() {
                   @Override
                   public void onImageAdded(Item item) {
                     items.add(item);

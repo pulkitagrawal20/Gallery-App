@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-public class AddImageDialog implements itemHelper.OnCompleteListener {
+public class ImageDialog implements itemHelper.OnCompleteListener {
     private Context context;
     private OnCompleteListener listener;
     private DialogAddImageBinding b;
@@ -37,33 +37,44 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
     int flag=0;
     private AlertDialog dialog;
     private String imageUrl;
+    private Item item;
+    private boolean isAlreadyChecked;
 
-    void show(Context context,OnCompleteListener listener){
-        this.context=context;
-        this.listener = listener;
-
-        //Inflate dialogs layout:
-        if(context instanceof Gallery_Activity){
-            inflater=((Gallery_Activity)context).getLayoutInflater();
-                    b=DialogAddImageBinding.inflate(inflater);
-        }
-        else {
-            dialog.dismiss();
-            listener.onError("Cast Exception:");
+    void showDialog(Context context, OnCompleteListener listener){
+        if(!initializingDialog(context,listener)){
             return;
         }
-
-        //Create and Show Dialog:
-         dialog= new MaterialAlertDialogBuilder(context,R.style.CustomDialogTheme)
-                .setView(b.getRoot())
-                 .setCancelable(false)
-                .show();
 
         //Handle events:
         handleDimensionsInput();
 
         hideErrorsForEditText();
     }
+
+    private boolean initializingDialog(Context context,OnCompleteListener listener){
+        this.context=context;
+        this.listener = listener;
+
+        //Inflate dialogs layout:
+        if(context instanceof Gallery_Activity){
+            inflater=((Gallery_Activity)context).getLayoutInflater();
+            b=DialogAddImageBinding.inflate(inflater);
+        }
+        else {
+            dialog.dismiss();
+            listener.onError("Cast Exception:");
+            return false;
+        }
+
+        //Create and Show Dialog:
+        dialog= new MaterialAlertDialogBuilder(context,R.style.CustomDialogTheme)
+                .setView(b.getRoot())
+                .setCancelable(false)
+                .show();
+
+        return true;
+    }
+
 
     //Step 1: Input Dimensions:
 
@@ -184,6 +195,27 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
 
     }
 
+    public void editFetchImage(Context context,Item item,OnCompleteListener listener){
+        this.imageUrl=item.url;
+        this.item=item;
+        if(!initializingDialog(context,listener)){
+            return;
+        }
+        b.Title.setText("Edit Image");
+        b.AddButton.setText("Update");
+        b.progressSubtitle.setText("Loading Image....");
+        b.paletteColorTV.setText("Choose a new palette color");
+        b.ChooseLabelTitle.setText("Choose a new label");
+        editImage(imageUrl);
+    }
+
+    private void editImage(String imageUrl) {
+        b.inputDimensionsRoot.setVisibility(View.GONE);
+        b.progressIndicatorRoot.setVisibility(View.VISIBLE);
+
+        new itemHelper().editImage(imageUrl,context,this);
+    }
+
 
     private void handleAddImageEvent() {
         b.AddButton.setOnClickListener(new View.OnClickListener() {
@@ -227,6 +259,13 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
         binding.getRoot().setText("Custom");
         b.labelChips.addView(binding.getRoot());
 
+        if(item!=null && !isAlreadyChecked){
+            binding.getRoot().setChecked(true);
+            b.customLabelInput.setVisibility(View.VISIBLE);
+            b.CustomLabelET.setText(item.label);
+            isCustomLabel=true;
+        }
+
         binding.getRoot().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -243,6 +282,12 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
             ChipLabelBinding binding = ChipLabelBinding.inflate(inflater);
             binding.getRoot().setText(label);
             b.labelChips.addView(binding.getRoot());
+
+            //For preSelected Label chips on edit:
+            if (item != null && item.label.equals(label)) {
+                binding.getRoot().setChecked(true);
+                isAlreadyChecked = true;
+            }
         }
     }
     //Color chips:
@@ -252,6 +297,11 @@ public class AddImageDialog implements itemHelper.OnCompleteListener {
             ChipColorBinding binding = ChipColorBinding.inflate(inflater);
             binding.getRoot().setChipBackgroundColor(ColorStateList.valueOf(color));
             b.colorChips.addView(binding.getRoot());
+
+            //For preSelected Color chips on edit:
+            if(item!=null && item.color==color){
+                binding.getRoot().setChecked(true);
+            }
         }
     }
 

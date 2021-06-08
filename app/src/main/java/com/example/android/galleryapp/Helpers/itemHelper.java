@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.android.galleryapp.Helpers.RedirectURLHelper;
+import com.example.android.galleryapp.Models.Item;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.mlkit.vision.common.InputImage;
@@ -105,6 +106,28 @@ public class itemHelper {
                     public void onLoadFailed(@Nullable Drawable errorDrawable) {
                         super.onLoadFailed(errorDrawable);
                         listener.onError("Image Load Failed");
+                    }
+                });
+    }
+
+    public void editImage(String url, Context context, OnCompleteListener listener) {
+        this.context = context;
+        this.redURL = url;
+        this.listener = listener;
+        Glide.with(context)
+                .asBitmap()
+                .onlyRetrieveFromCache(true)
+                .load(url)
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        bitmap = resource;
+                        extractPaletteFromBitmap();
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
                     }
                 });
     }

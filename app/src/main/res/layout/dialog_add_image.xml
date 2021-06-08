@@ -233,7 +233,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:constraint_referenced_ids="colorChips,imageView,paletteColorTV,labelChips,customLabelInput,AddButton,ChooseLabelTitle,shareImgBtn" />
+        app:constraint_referenced_ids="colorChips,imageView,paletteColorTV,labelChips,customLabelInput,AddButton,ChooseLabelTitle"
+        tools:ignore="UnknownId" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
