@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.android.galleryapp.Gallery_Activity;
 import com.example.android.galleryapp.Models.Item;
 import com.example.android.galleryapp.R;
 import com.example.android.galleryapp.databinding.ItemCardBinding;
@@ -76,6 +77,7 @@ public class ListItemTouchHelperAdapter extends RecyclerView.Adapter<ListItemTou
     public void filter(String query){
         if(query.trim().isEmpty()){
             itemsToShow=items;
+            ((Gallery_Activity)context).findViewById(R.id.SearchItemsList).setVisibility(View.GONE);
             notifyDataSetChanged();
             return;
         }
@@ -88,6 +90,11 @@ public class ListItemTouchHelperAdapter extends RecyclerView.Adapter<ListItemTou
                 queryItems.add(item);
             }
         }
+        if(queryItems.size()==0){
+            ((Gallery_Activity)context).findViewById(R.id.SearchItemsList).setVisibility(View.VISIBLE);
+            ((Gallery_Activity)context).findViewById(R.id.itemsList).setVisibility(View.GONE);
+        }
+
         itemsToShow=queryItems;
         notifyDataSetChanged();
     }

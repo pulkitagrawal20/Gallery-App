@@ -254,6 +254,7 @@ import java.util.List;
               Toast.makeText(context, "Image Removed", Toast.LENGTH_SHORT).show();
               if (items.isEmpty())
                   b.itemsList.setVisibility(View.VISIBLE);
+                  b.SearchItemsList.setVisibility(View.GONE);
                 adapter.notifyDataSetChanged();
           }
       };
@@ -275,6 +276,7 @@ import java.util.List;
                           showListItems(items);
 
                           b.itemsList.setVisibility(View.GONE);
+                          b.SearchItemsList.setVisibility(View.GONE);
                       }
 
                       @Override
@@ -317,9 +319,11 @@ import java.util.List;
 
           if(items==null){
               b.itemsList.setVisibility(View.VISIBLE);
+              b.SearchItemsList.setVisibility(View.GONE);
           }
           else {
               b.itemsList.setVisibility(View.GONE);
+              b.SearchItemsList.setVisibility(View.GONE);
           }
       }
 
@@ -349,6 +353,7 @@ import java.util.List;
                     showListItems(items);
 
                     b.itemsList.setVisibility(View.GONE);
+                    b.SearchItemsList.setVisibility(View.GONE);
                   }
 
                   @Override

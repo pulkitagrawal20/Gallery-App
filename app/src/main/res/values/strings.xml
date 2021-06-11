@@ -19,4 +19,5 @@
     <string name="search">Search</string>
     <string name="Sort_Alphabetically">Sort</string>
     <string name="drag_and_drop">Drag and Drop</string>
+    <string name="No_items_found">No Items Found</string>
 </resources>

@@ -20,6 +20,18 @@
         />
 
     <TextView
+        android:id="@+id/SearchItemsList"
+        style="@style/TextAppearance.MaterialComponents.Headline6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/No_items_found"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/List"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
         android:id="@+id/itemsList"
         style="@style/TextAppearance.MaterialComponents.Headline6"
         android:layout_width="match_parent"
