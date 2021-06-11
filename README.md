@@ -29,6 +29,7 @@ A simple gallery Application to Add images with Title:
 -Buttom to sort images alphabetically according to labels
 
 # Previews of the Application:
+
 ![e57ebeb3-0b35-4a28-9974-bbcae48ef3f8](https://user-images.githubusercontent.com/69674896/120801006-4202a780-c55e-11eb-8d9b-ac80431b5023.jpg)
 ![3b24a01f-f3ec-44c5-b8f4-7d0bdf3b45a3](https://user-images.githubusercontent.com/69674896/120801027-462ec500-c55e-11eb-922b-0800bc39b6d5.jpg)
 ![fbd716f3-74c0-4401-88d3-921a2c919d44](https://user-images.githubusercontent.com/69674896/120176375-d3071500-c224-11eb-92db-d37fdb6451e9.jpg)
