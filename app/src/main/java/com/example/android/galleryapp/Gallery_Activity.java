@@ -141,6 +141,9 @@ import java.util.List;
       @Override
       //Handling events of Context Menu Item Selection:
       public boolean onContextItemSelected (MenuItem item) {
+          imageUrl = adapter.url;
+          int index= adapter.index;
+          binding= adapter.itemCardBinding;
           //For edit image option::
           if(item.getItemId()==R.id.editMenuItem){
               editImage();
@@ -191,7 +194,7 @@ import java.util.List;
       }
 
 
-      @Override
+     @Override
       public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
           super.onRequestPermissionsResult(requestCode, permissions, grantResults);
           if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
@@ -365,7 +368,7 @@ import java.util.List;
 
       }
 
-          public Bitmap loadBitmapFromView(View view) {
+          public static Bitmap loadBitmapFromView(View view) {
               //Define a bitmap with the same size as the view
               Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
               //Bind a canvas to it
